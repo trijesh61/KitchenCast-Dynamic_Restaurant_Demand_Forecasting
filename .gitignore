@@ -1,0 +1,44 @@
+# Virtual Environment
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Distribution
+build/
+dist/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# MLflow
+mlruns/
+
+# DVC
+.dvc/cache/
+
+# Artifacts
+artifacts/
+
+# Models
+models/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment Variables
+.env
