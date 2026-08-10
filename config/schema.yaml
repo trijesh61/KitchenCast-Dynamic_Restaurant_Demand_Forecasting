@@ -1,0 +1,12 @@
+COLUMNS:
+  id: int64
+  week: int64
+  center_id: int64
+  meal_id: int64
+  checkout_price: float64
+  base_price: float64
+  emailer_for_promotion: int64
+  homepage_featured: int64
+  num_orders: int64
+
+TARGET_COLUMN: num_orders
