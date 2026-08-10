@@ -1,3 +1,9 @@
 /config.local
 /tmp
 /cache
+
+# Virtual Environment
+
+venv/
+env/
+.venv/
