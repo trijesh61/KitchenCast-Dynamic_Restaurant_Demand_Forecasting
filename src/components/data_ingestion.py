@@ -3,12 +3,12 @@ import sys
 from dataclasses import dataclass
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 from src.constants import CONFIG_FILE_PATH
 from src.exception import CustomException
 from src.logger import logger
 from src.utils.common import read_yaml
+
 
 @dataclass
 class DataIngestionConfig:
@@ -22,8 +22,10 @@ class DataIngestionConfig:
 class DataIngestion:
 
     def __init__(self):
+
         try:
             config = read_yaml(CONFIG_FILE_PATH)
+
             ingestion_config = config["data_ingestion"]
 
             self.ingestion_config = DataIngestionConfig(
@@ -40,8 +42,10 @@ class DataIngestion:
     def initiate_data_ingestion(self):
 
         try:
+
             logger.info("Data Ingestion started.")
 
+            # Load source dataset
             logger.info(
                 f"Reading dataset from: "
                 f"{self.ingestion_config.source_data_path}"
@@ -52,18 +56,28 @@ class DataIngestion:
             )
 
             logger.info(
-                f"Dataset loaded successfully. Shape: {df.shape}"
+                f"Dataset loaded successfully. "
+                f"Shape: {df.shape}"
             )
 
-            logger.info("Creating data ingestion directory.")
+            # Sort chronologically
+            if "week" not in df.columns:
+                raise ValueError(
+                    "'week' column is required for "
+                    "chronological splitting."
+                )
 
-            import os
+            df = df.sort_values(
+                "week"
+            ).reset_index(drop=True)
 
+            # Create artifact directory
             os.makedirs(
                 self.ingestion_config.root_dir,
                 exist_ok=True
             )
 
+            # Save raw copy
             logger.info("Saving raw dataset.")
 
             df.to_csv(
@@ -71,23 +85,27 @@ class DataIngestion:
                 index=False
             )
 
-            logger.info("Performing train-test split.")
+            # Chronological train-test split
+            split_index = int(len(df) * 0.8)
 
-            train_set, test_set = train_test_split(
-                df,
-                test_size=0.2,
-                random_state=42
+            train_set = df.iloc[:split_index].copy()
+            test_set = df.iloc[split_index:].copy()
+
+            logger.info(
+                f"Training data shape: {train_set.shape}"
             )
 
-            logger.info("Saving train dataset.")
+            logger.info(
+                f"Testing data shape: {test_set.shape}"
+            )
 
+            # Save training data
             train_set.to_csv(
                 self.ingestion_config.train_data_path,
                 index=False
             )
 
-            logger.info("Saving test dataset.")
-
+            # Save testing data
             test_set.to_csv(
                 self.ingestion_config.test_data_path,
                 index=False
@@ -99,13 +117,15 @@ class DataIngestion:
 
             return (
                 self.ingestion_config.train_data_path,
-                self.ingestion_config.test_data_path
+                self.ingestion_config.test_data_path,
             )
 
         except Exception as e:
+
             logger.exception(
                 "Error occurred during Data Ingestion."
             )
+
             raise CustomException(e, sys)
 
 
@@ -117,5 +137,6 @@ if __name__ == "__main__":
         ingestion.initiate_data_ingestion()
     )
 
-    print("Train File:", train_path)
-    print("Test File:", test_path)
+    print("\nData Ingestion Outputs:")
+    print("Train:", train_path)
+    print("Test :", test_path)

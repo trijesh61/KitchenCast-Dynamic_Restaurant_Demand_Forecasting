@@ -1,6 +1,7 @@
 artifacts:
   root_dir: artifacts
 
+
 data_ingestion:
   root_dir: artifacts/data_ingestion
   source_data_path: data/raw/train.csv
@@ -8,5 +9,19 @@ data_ingestion:
   train_data_path: artifacts/data_ingestion/train.csv
   test_data_path: artifacts/data_ingestion/test.csv
 
+
 data_validation:
   schema_file_path: config/schema.yaml
+
+
+data_transformation:
+  root_dir: artifacts/data_transformation
+  preprocessor_path: artifacts/data_transformation/preprocessor.pkl
+  meal_info_path: data/raw/meal_info.csv
+  center_info_path: data/raw/fulfilment_center_info.csv
+
+
+model_trainer:
+  root_dir: artifacts/model_trainer
+  model_path: artifacts/model_trainer/model.pkl
+  target_column: num_orders
